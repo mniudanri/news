@@ -29,6 +29,7 @@ go get -u github.com/lib/pq
 
 1. Install prerequisites
 2. Change `sample.env` to `.env`
+3. Configure `.env` file
 
 ## Testing
 
