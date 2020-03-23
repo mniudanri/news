@@ -6,6 +6,7 @@ import (
     "github.com/joho/godotenv"
      "strings"
     "testing"
+    "io/ioutil"
 )
 
 func TestGetNewsHandler(t *testing.T) {
@@ -28,25 +29,28 @@ func TestGetNewsHandler(t *testing.T) {
 }
 
 func TestPostNewsHandlerSuccess(t *testing.T) {
-     r, err := http.NewRequest("POST", "/news", strings.NewReader("author=TestAuthor&body=TestContent"))
-     r.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+     r, err := http.NewRequest("POST", "/news", strings.NewReader(`{"author":"TestAuthor","body":"TestContent"}`))
+     r.Header.Set("Content-Type", "application/json")
      if err != nil {
           t.Fatal(err)
      }
 
-     if author := r.FormValue("body"); author == "" {
-		t.Errorf(`req.FormValue("body") = %s, can not be empty`, author)
-     }
+     w := httptest.NewRecorder()
+     handle := http.HandlerFunc(PostNews)
+     handle.ServeHTTP(w, r)
 
-     if body := r.FormValue("author"); body == "" {
-		t.Errorf(`req.FormValue("author") = %s, can not be empty`, body)
+     resp := w.Result()
+     body, _ := ioutil.ReadAll(resp.Body)
+
+     if resp.StatusCode != http.StatusCreated {
+          t.Errorf("Unexpected status code %d, response: %s", resp.StatusCode, string(body))
      }
 }
 
 func TestPostNewsHandlerAuthorFailed(t *testing.T) {
      // body set to empty string
-     r, err := http.NewRequest("POST", "/news", strings.NewReader("author=&body=TestContent"))
-     r.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+     r, err := http.NewRequest("POST", "/news", strings.NewReader(`{"body":"TestContent"}`))
+     r.Header.Set("Content-Type", "application/json")
      if err != nil {
           t.Fatal(err)
      }
@@ -62,8 +66,8 @@ func TestPostNewsHandlerAuthorFailed(t *testing.T) {
 }
 
 func TestPostNewsHandlerBodyFailed(t *testing.T) {
-     r, err := http.NewRequest("POST", "/news", strings.NewReader("author=TestAuthor&body="))
-     r.Header.Set("Content-Type", "application/x-www-form-urlencoded; param=value")
+     r, err := http.NewRequest("POST", "/news", strings.NewReader(`{"author":"TestAuthor"`))
+     r.Header.Set("Content-Type", "application/json")
      if err != nil {
           t.Fatal(err)
      }
