@@ -11,6 +11,7 @@ import(
 	"errors"
     _ "github.com/lib/pq"
 	"strings"
+	"log"
 )
 
 type NewsStoreJob struct { // job class
@@ -86,18 +87,25 @@ func PostNewsToElasticSearch(news model.NewsPostResponse) []byte {
 	}`, news.Id, news.CreatedTime);
 
 	payload := strings.NewReader(jsonElastic)
-	req, _ := http.NewRequest("POST", fmt.Sprintf("http://localhost:9200/news-detail/_update/%d", news.Id), payload)
+	req, err := http.NewRequest("POST", fmt.Sprintf("http://localhost:9200/news-detail/_update/%d", news.Id), payload)
+
+	if err != nil {
+		query := fmt.Sprintf("DELETE FROM news WHERE id = %d", news.Id)
+		_, _ = db.Exec(query)
+		log.Print(fmt.Sprintf("Failed store to elastic with json:\n%s", jsonElastic))
+		return nil
+	}
+
 	req.Header.Set("Content-Type", "application/json")
 
 	req.SetBasicAuth(os.Getenv("ELASTIC_USER"), os.Getenv("ELASTIC_PWD"))
 	elasticRes, _ := http.DefaultClient.Do(req)
-	fmt.Println("Response Elastic", elasticRes)
 
 	defer elasticRes.Body.Close()
 	body, err := ioutil.ReadAll(elasticRes.Body)
 
 	if err != nil {
-		panic(errors.New("Can not get data from elasticsearch!"))
+		log.Print(errors.New("Can not get data from elasticsearch!"))
 	}
 
 	fmt.Println(string(body))

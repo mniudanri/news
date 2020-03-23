@@ -3,7 +3,7 @@ package jobs
 // NOTE: queue for background process
 // number of worker can be set from initialization
 import(
-	"fmt"
+	"log"
 )
 
 type Job interface {
@@ -31,15 +31,15 @@ func CreateWorker(workerId int, jobChan chan Job) *Worker {
 }
 
 func (w *Worker) Run() {
-    fmt.Println("Run worker id ", w.WorkerId)
+    log.Print("Run worker id ", w.WorkerId)
 	go func() {
 		for {
 			select {
 				case job := <- w.JobChannel:
-					fmt.Println("Running job at id ", w.WorkerId)
+					log.Print("Running job at id ", w.WorkerId)
 					job.Process()
 				case <-w.Status:
-					fmt.Println("Job Done at id ", w.WorkerId )
+					log.Print("Job Done at id ", w.WorkerId )
 					return
 			}
 		}
@@ -71,7 +71,6 @@ func (queue *JobQueue) Push(job Job) {
 }
 
 func (queue *JobQueue) Stop() {
-	fmt.Println("queue Stopped")
 	queue.Status <- true
 }
 

@@ -30,6 +30,14 @@ go get -u github.com/lib/pq
 1. Install prerequisites
 2. Change `sample.env` to `.env`
 
+## Testing
+
+Testing go using `go test`
+
+```shell
+go test ./...
+```
+
 ## Contributing
 
 Contributions are most welcome!

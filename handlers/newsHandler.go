@@ -10,7 +10,7 @@ import(
     "encoding/json"
     "errors"
 	"news-app/models"
-	"news-app/connection"
+    "news-app/connection"
 )
 
 var (
@@ -61,6 +61,7 @@ func PostNews(w http.ResponseWriter, r *http.Request) {
     job := jobs.InitDataNewsStoreJob(res.Author, res.Body)
     job.Dispatch()
 
+    w.WriteHeader(http.StatusCreated)
     w.Write([]byte("{\"status\":true, \"message\":\"News created\"}"))
     json.NewEncoder(w)
     return
