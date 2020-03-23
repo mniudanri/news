@@ -31,14 +31,15 @@ go get -u github.com/lib/pq
 2. Change `sample.env` to `.env`
 3. Configure `.env` file
 
-## Endpoint
-Sample json body `POST/news`
+## Example Uses of Endpoint
+1. Example json body `POST/news`
 ```shell
 {
 	"author": "Author",
 	"body": "This is my first content"
 }
 ```
+2. Example url get `GET/news?page=1&limit=10`
 
 ## Testing
 
