@@ -31,6 +31,15 @@ go get -u github.com/lib/pq
 2. Change `sample.env` to `.env`
 3. Configure `.env` file
 
+## Endpoint
+Sample json body `POST/news`
+```shell
+{
+	"author": "Author",
+	"body": "This is my first content"
+}
+```
+
 ## Testing
 
 Testing go using `go test`
