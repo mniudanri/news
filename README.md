@@ -34,12 +34,17 @@ go get -u github.com/lib/pq
 ## Example Uses of Endpoint
 1. Example json body `POST/news`
 ```shell
-{
+curl --location --request POST 'http://localhost:3000/news' \
+--header 'Content-Type: application/json' \
+--data-raw '{
 	"author": "Author",
 	"body": "This is my first content"
-}
+}'
 ```
-2. Example url get `GET/news?page=1&limit=10`
+2. Example get 
+```shell
+curl --location --request GET 'http://localhost:3000/news?limit=10&page=1'
+```
 
 ## Testing
 
